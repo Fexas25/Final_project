@@ -1,3 +1,6 @@
+import random
+import string
+
 # Function to check the availability of a seat
 def check_seat_availability(seat_map, row, column):
     #return 1 if seat is empty
@@ -13,15 +16,34 @@ def check_seat_availability(seat_map, row, column):
     elif seat_map[row][column] == 'R':
         return 4
 
+# Function to generate a unique booking reference
+def generate_booking_reference():
+    length = 8
+    chars = string.ascii_uppercase + string.ascii_lowercase + string.digits
+    reference = ''.join(random.choice(chars) for _ in range(length))
+
+    while reference in references:
+        reference = ''.join(random.choice(chars) for _ in range(length))
+
+    references.append(reference)
+    return reference
+
 # Function to book a seat
 def book_seat(seat_map, row, column):
     #to check the situation of the seat
     situation = check_seat_availability(seat_map, row, column)
-    #return 1 means the seat is empty, then book it
+    #return 1 means the seat is empty, then book it and add database
     #return 2 or 3 means this is not seat area
     #return 4 means the seat is booked
     if situation == 1:
+        reference = generate_booking_reference()
         seat_map[row][column] = 'R'
+        customer_data = {
+            'reference': reference,
+            'row': row,
+            'column': column
+        }
+        customer_db[reference] = customer_data
         print("Seat booked successfully!")
     elif situation == 4:
         print("Seat is already booked.")
@@ -32,10 +54,12 @@ def book_seat(seat_map, row, column):
 def free_seat(seat_map, row, column):
     #to check the situation of the seat
     situation = check_seat_availability(seat_map, row, column)
-    #return 4 if the seat is booked, then free it
+    #return 4 if the seat is booked, then free it and delete database
     #return 1 if this is a free seat
     #return 2, 3 if this is not seat area
     if situation == 4:
+        reference = seat_map[row][column]
+        del customer_db[reference]
         seat_map[row][column] = 'F'
         print("Seat freed successfully!")
     elif situation == 1:
@@ -59,6 +83,12 @@ seat_map[6][75] = 'S'
 seat_map[4][76] = 'S'
 seat_map[5][76] = 'S'
 seat_map[6][76] = 'S'
+
+# Create the initial customer database
+customer_db = {}
+
+# This list will store the references
+references = []
 
 # Menu loop
 while True:
