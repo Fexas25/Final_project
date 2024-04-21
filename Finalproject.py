@@ -59,7 +59,8 @@ def free_seat(seat_map, row, column):
     #return 2, 3 if this is not seat area
     if situation == 4:
         reference = seat_map[row][column]
-        del customer_db[reference]
+        if reference in customer_db:
+            del customer_db[reference]
         seat_map[row][column] = 'F'
         print("Seat freed successfully!")
     elif situation == 1:
